@@ -100,19 +100,8 @@ function renderPosts(posts) {
             `;
         }
         
-        // Add image indicators if multiple images
-        let indicatorHTML = '';
-        if (post.images.length > 1) {
-            indicatorHTML = `
-                <div class="image-indicator">
-                    ${post.images.map((_, i) => `<span ${i === 0 ? 'class="active"' : ''}></span>`).join('')}
-                </div>
-            `;
-        }
-        
         infoDiv.innerHTML = `
             ${colorSelectorHTML}
-            ${indicatorHTML}
             <h2>${post.name}</h2>
             <p class="price">${post.price}€</p>
             <button class="add-to-cart">Ajouter au panier</button>
@@ -262,39 +251,6 @@ if (cartIcon) {
 // Smooth scroll snap for images
 function setupImageScroll() {
     document.querySelectorAll('.post-images').forEach(container => {
-        let scrollTimeout;
-        const indicators = container.parentElement.querySelectorAll('.image-indicator');
-        
-        // Update indicators on scroll
-        container.addEventListener('scroll', function() {
-            // Show indicators when scrolling
-            indicators.forEach(ind => ind.classList.add('visible'));
-            
-            // Clear existing timeout
-            clearTimeout(scrollTimeout);
-            
-            // Hide indicators after 2 seconds of no scrolling
-            scrollTimeout = setTimeout(() => {
-                indicators.forEach(ind => ind.classList.remove('visible'));
-            }, 2000);
-            
-            // Update active indicator
-            const indicatorSpans = this.parentElement.querySelectorAll('.image-indicator span');
-            if (indicatorSpans.length === 0) return;
-            
-            const scrollLeft = this.scrollLeft;
-            const imageWidth = this.querySelector('img').offsetWidth + 10; // +10 for gap
-            const currentIndex = Math.round(scrollLeft / imageWidth);
-            
-            indicatorSpans.forEach((indicator, index) => {
-                if (index === currentIndex) {
-                    indicator.classList.add('active');
-                } else {
-                    indicator.classList.remove('active');
-                }
-            });
-        });
-        
         // Mouse drag to scroll
         let isDown = false;
         let startX;
@@ -324,8 +280,6 @@ function setupImageScroll() {
             const walk = (x - startX) * 2;
             container.scrollLeft = scrollLeft - walk;
         });
-        
-        // Touch support is already handled by -webkit-overflow-scrolling: touch
     });
 }
 

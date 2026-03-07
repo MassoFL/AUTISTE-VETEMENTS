@@ -122,7 +122,7 @@ header h1 {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 20px;
+    padding: 20px 20px 100px 20px;
     position: relative;
 }
 
@@ -177,31 +177,6 @@ header h1 {
 
 .post-images.multi img {
     min-width: 100%;
-}
-
-.image-indicator {
-    display: flex;
-    gap: 8px;
-    justify-content: center;
-    margin-top: 10px;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-
-.image-indicator.visible {
-    opacity: 1;
-}
-
-.image-indicator span {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: #333;
-    transition: background 0.3s ease;
-}
-
-.image-indicator span.active {
-    background: #fff;
 }
 
 .post-info {
@@ -375,5 +350,13 @@ header h1 {
     
     .story-container p {
         font-size: 1rem;
+    }
+    
+    .post {
+        padding: 20px 20px 120px 20px;
+    }
+    
+    .add-to-cart {
+        margin-bottom: 20px;
     }
 }
