@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autiste Vêtements</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Autiste Vêtements</h1>
+        <nav class="nav-links">
+            <a href="index.html" class="nav-link active">Feed</a>
+            <a href="story.html" class="nav-link">The Story</a>
+        </nav>
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Rechercher un vêtement, poster, citation..." />
+            <button id="searchBtn">🔍</button>
+        </div>
+    </header>
+
+    <div class="feed-container">
+        <!-- Post 1 -->
+        <article class="post" data-tags="hoodie vêtement sweat confort">
+            <div class="post-images">
+                <img src="https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=800" alt="Vêtement 1">
+            </div>
+            <div class="post-info">
+                <h2>Hoodie Minimaliste</h2>
+                <p class="price">89€</p>
+                <button class="add-to-cart">Ajouter au panier</button>
+            </div>
+        </article>
+
+        <!-- Post 2 -->
+        <article class="post" data-tags="tshirt vêtement oversize casual">
+            <div class="post-images multi">
+                <img src="https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?w=800" alt="Vêtement 2-1">
+                <img src="https://images.unsplash.com/photo-1620799139834-6b8f844fbe61?w=800" alt="Vêtement 2-2">
+            </div>
+            <div class="post-info">
+                <h2>T-Shirt Oversize</h2>
+                <p class="price">45€</p>
+                <button class="add-to-cart">Ajouter au panier</button>
+            </div>
+        </article>
+
+        <!-- Post 3 -->
+        <article class="post" data-tags="pantalon vêtement cargo streetwear">
+            <div class="post-images">
+                <img src="https://images.unsplash.com/photo-1542272604-787c3835535d?w=800" alt="Vêtement 3">
+            </div>
+            <div class="post-info">
+                <h2>Pantalon Cargo</h2>
+                <p class="price">120€</p>
+                <button class="add-to-cart">Ajouter au panier</button>
+            </div>
+        </article>
+
+        <!-- Post 4 -->
+        <article class="post" data-tags="veste vêtement technique outdoor">
+            <div class="post-images multi">
+                <img src="https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=800" alt="Vêtement 4-1">
+                <img src="https://images.unsplash.com/photo-1591047139832-c5e6e42e8d9f?w=800" alt="Vêtement 4-2">
+                <img src="https://images.unsplash.com/photo-1591047139836-8b0c4b7a3f6f?w=800" alt="Vêtement 4-3">
+            </div>
+            <div class="post-info">
+                <h2>Veste Technique</h2>
+                <p class="price">199€</p>
+                <button class="add-to-cart">Ajouter au panier</button>
+            </div>
+        </article>
+
+        <!-- Post 5 -->
+        <article class="post" data-tags="sweat vêtement basique confort">
+            <div class="post-images">
+                <img src="https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=800" alt="Vêtement 5">
+            </div>
+            <div class="post-info">
+                <h2>Sweat Basique</h2>
+                <p class="price">65€</p>
+                <button class="add-to-cart">Ajouter au panier</button>
+            </div>
+        </article>
+
+        <!-- Post 6 - Poster -->
+        <article class="post" data-tags="poster print art citation be yourself">
+            <div class="post-images">
+                <img src="https://images.unsplash.com/photo-1513519245088-0e12902e35ca?w=800" alt="Poster 1">
+            </div>
+            <div class="post-info">
+                <h2>Poster "Be Yourself"</h2>
+                <p class="price">25€</p>
+                <button class="add-to-cart">Ajouter au panier</button>
+            </div>
+        </article>
+
+        <!-- Post 7 - Poster -->
+        <article class="post" data-tags="poster print art citation minimalist">
+            <div class="post-images">
+                <img src="https://images.unsplash.com/photo-1578301978162-7aae4d755744?w=800" alt="Poster 2">
+            </div>
+            <div class="post-info">
+                <h2>Print Minimaliste</h2>
+                <p class="price">30€</p>
+                <button class="add-to-cart">Ajouter au panier</button>
+            </div>
+        </article>
+    </div>
+
+    <div class="cart-icon" id="cartIcon">
+        <span class="cart-count">0</span>
+        🛒
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.js"></script>
+    <script src="config.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
