@@ -178,9 +178,8 @@ function updateCartCount() {
 // Search functionality
 function setupSearch() {
     const searchInput = document.getElementById('searchInput');
-    const searchBtn = document.getElementById('searchBtn');
     
-    if (!searchInput || !searchBtn) return;
+    if (!searchInput) return;
     
     function performSearch() {
         const query = searchInput.value.toLowerCase().trim();
@@ -213,7 +212,6 @@ function setupSearch() {
         }
     }
     
-    searchBtn.addEventListener('click', performSearch);
     searchInput.addEventListener('keypress', function(e) {
         if (e.key === 'Enter') {
             performSearch();
