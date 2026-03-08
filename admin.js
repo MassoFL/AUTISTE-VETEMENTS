@@ -120,6 +120,7 @@ async function createPost() {
     const price = document.getElementById('price').value;
     const tags = document.getElementById('tags').value;
     const productType = document.getElementById('productType').value;
+    const stripeLink = document.getElementById('stripeLink').value;
     
     try {
         if (uploadedFiles.length === 0) {
@@ -150,7 +151,8 @@ async function createPost() {
             tags: tags,
             type: productType,
             images: imageUrls,
-            colors: colorsArray
+            colors: colorsArray,
+            stripe_payment_link: stripeLink || null
         };
 
         if (editingPostId) {

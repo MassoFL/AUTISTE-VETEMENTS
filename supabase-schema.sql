@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS posts (
     type TEXT NOT NULL,
     images TEXT[] NOT NULL,
     colors TEXT[] NOT NULL DEFAULT '{}',
+    stripe_payment_link TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 

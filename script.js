@@ -262,12 +262,23 @@ function removeNoResultsMessage() {
 }
 
 // Cart icon click
-const cartIcon = document.getElementById('cartIcon');
-if (cartIcon) {
-    cartIcon.addEventListener('click', function() {
-        openCheckout();
-    });
-}
+document.addEventListener('DOMContentLoaded', function() {
+    const cartIcon = document.getElementById('cartIcon');
+    if (cartIcon) {
+        cartIcon.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            openCheckout();
+        });
+        
+        // Also add touch event for mobile
+        cartIcon.addEventListener('touchend', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            openCheckout();
+        });
+    }
+});
 
 // Checkout modal functions
 function openCheckout() {
