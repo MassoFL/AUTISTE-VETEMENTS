@@ -123,27 +123,56 @@ async function createPost() {
     const stripeLink = document.getElementById('stripeLink').value;
     
     try {
-        if (uploadedFiles.length === 0) {
-            alert('Veuillez ajouter au moins une image');
-            return;
-        }
-
-        // Upload images first
-        const imageUrls = await uploadImages();
+        let imageUrls;
+        let colorsArray = [];
         
-        // Build colors array based on imageColorMap
-        const colorsArray = [];
-        imageUrls.forEach((url, index) => {
-            // Find which color this image belongs to
-            let assignedColor = null;
-            for (const [colorName, imageIndices] of Object.entries(imageColorMap)) {
-                if (imageIndices.includes(index)) {
-                    assignedColor = colorName;
-                    break;
-                }
+        if (editingPostId) {
+            // Mode édition
+            if (uploadedFiles.length > 0) {
+                // Upload new images
+                imageUrls = await uploadImages();
+                
+                // Build colors array
+                imageUrls.forEach((url, index) => {
+                    let assignedColor = null;
+                    for (const [colorName, imageIndices] of Object.entries(imageColorMap)) {
+                        if (imageIndices.includes(index)) {
+                            assignedColor = colorName;
+                            break;
+                        }
+                    }
+                    colorsArray.push(assignedColor || 'Non assigné');
+                });
+            } else {
+                // Keep existing images
+                const { data: existingPost } = await supabase
+                    .from('posts')
+                    .select('images, colors')
+                    .eq('id', editingPostId)
+                    .single();
+                imageUrls = existingPost.images;
+                colorsArray = existingPost.colors;
             }
-            colorsArray.push(assignedColor || 'Non assigné');
-        });
+        } else {
+            // Mode création
+            if (uploadedFiles.length === 0) {
+                alert('Veuillez ajouter au moins une image');
+                return;
+            }
+
+            imageUrls = await uploadImages();
+            
+            imageUrls.forEach((url, index) => {
+                let assignedColor = null;
+                for (const [colorName, imageIndices] of Object.entries(imageColorMap)) {
+                    if (imageIndices.includes(index)) {
+                        assignedColor = colorName;
+                        break;
+                    }
+                }
+                colorsArray.push(assignedColor || 'Non assigné');
+            });
+        }
 
         const postData = {
             name: productName,
@@ -269,6 +298,7 @@ async function editPost(postId) {
         document.getElementById('price').value = post.price;
         document.getElementById('tags').value = post.tags;
         document.getElementById('productType').value = post.type;
+        document.getElementById('stripeLink').value = post.stripe_payment_link || '';
 
         // Set editing mode
         editingPostId = postId;
@@ -277,11 +307,19 @@ async function editPost(postId) {
         // Clear file input and preview
         document.querySelector('.image-file').value = '';
         document.getElementById('imagePreview').innerHTML = '';
+        uploadedFiles = [];
+        
+        // Show existing images as info
+        const previewDiv = document.getElementById('imagePreview');
+        const infoDiv = document.createElement('div');
+        infoDiv.style.cssText = 'color: #888; font-size: 0.9rem; margin-bottom: 10px;';
+        infoDiv.textContent = `${post.images.length} image(s) existante(s). Laissez vide pour garder les images actuelles.`;
+        previewDiv.appendChild(infoDiv);
         
         // Scroll to form
         document.querySelector('.form-section').scrollIntoView({ behavior: 'smooth' });
         
-        showSuccessMessage('Mode édition - Modifiez les champs et cliquez sur "Modifier le post"');
+        showSuccessMessage('Mode édition - Modifiez les champs. Les images sont optionnelles.');
     } catch (error) {
         console.error('Error:', error);
         alert('Erreur lors du chargement du post: ' + error.message);
