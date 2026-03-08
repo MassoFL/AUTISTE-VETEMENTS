@@ -1,6 +1,7 @@
 let cartCount = 0;
 let allPosts = [];
 let colorMap = {};
+let cartItems = []; // Store cart items with details
 const supabase = window.supabaseClient;
 
 // Initialize
@@ -66,6 +67,7 @@ function renderPosts(posts) {
         const postElement = document.createElement('article');
         postElement.className = 'post';
         postElement.setAttribute('data-tags', post.tags);
+        postElement.setAttribute('data-stripe-link', post.stripe_payment_link || '');
 
         const imagesDiv = document.createElement('div');
         imagesDiv.className = post.images.length > 1 ? 'post-images multi' : 'post-images';
@@ -144,6 +146,27 @@ function renderPosts(posts) {
 function setupAddToCart() {
     document.querySelectorAll('.add-to-cart').forEach(button => {
         button.addEventListener('click', function() {
+            const postElement = this.closest('.post');
+            const productName = postElement.querySelector('h2').textContent;
+            const priceText = postElement.querySelector('.price').textContent;
+            const price = parseFloat(priceText.replace('€', ''));
+            const image = postElement.querySelector('.post-images img').src;
+            const stripeLink = postElement.dataset.stripeLink;
+            
+            // Get selected color if any
+            const activeColorDot = postElement.querySelector('.color-dot.active');
+            const color = activeColorDot ? activeColorDot.dataset.color : null;
+            
+            // Add to cart
+            cartItems.push({
+                id: Date.now(),
+                name: productName,
+                price: price,
+                image: image,
+                color: color,
+                stripeLink: stripeLink
+            });
+            
             cartCount++;
             updateCartCount();
             
@@ -242,8 +265,124 @@ function removeNoResultsMessage() {
 const cartIcon = document.getElementById('cartIcon');
 if (cartIcon) {
     cartIcon.addEventListener('click', function() {
-        alert(`Vous avez ${cartCount} article(s) dans votre panier`);
+        openCheckout();
     });
+}
+
+// Checkout modal functions
+function openCheckout() {
+    const modal = document.getElementById('checkoutModal');
+    modal.classList.add('active');
+    renderCart();
+}
+
+function closeCheckout() {
+    const modal = document.getElementById('checkoutModal');
+    modal.classList.remove('active');
+}
+
+document.getElementById('closeCheckout').addEventListener('click', closeCheckout);
+
+// Close modal when clicking outside
+document.getElementById('checkoutModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeCheckout();
+    }
+});
+
+function renderCart() {
+    const container = document.getElementById('cartItemsContainer');
+    
+    if (cartItems.length === 0) {
+        container.innerHTML = `
+            <div class="empty-cart">
+                <div class="empty-cart-icon">🛒</div>
+                <div class="empty-cart-text">Votre panier est vide</div>
+            </div>
+        `;
+        return;
+    }
+    
+    const total = cartItems.reduce((sum, item) => sum + item.price, 0);
+    
+    container.innerHTML = `
+        <div class="cart-items">
+            ${cartItems.map(item => `
+                <div class="cart-item">
+                    <img src="${item.image}" alt="${item.name}" class="cart-item-image">
+                    <div class="cart-item-info">
+                        <div class="cart-item-name">${item.name}</div>
+                        ${item.color ? `<div class="cart-item-color">Couleur: ${item.color}</div>` : ''}
+                        <div class="cart-item-price">${item.price}€</div>
+                    </div>
+                    <button class="cart-item-remove" onclick="removeFromCart(${item.id})">×</button>
+                </div>
+            `).join('')}
+        </div>
+        <div class="cart-total">
+            <span class="cart-total-label">Total</span>
+            <span class="cart-total-amount">${total.toFixed(2)}€</span>
+        </div>
+        <button class="checkout-btn" onclick="proceedToCheckout()">Passer la commande</button>
+    `;
+}
+
+function removeFromCart(itemId) {
+    cartItems = cartItems.filter(item => item.id !== itemId);
+    cartCount = cartItems.length;
+    updateCartCount();
+    renderCart();
+}
+
+function proceedToCheckout() {
+    // If only one item and it has a Stripe link, redirect directly
+    if (cartItems.length === 1 && cartItems[0].stripeLink) {
+        window.location.href = cartItems[0].stripeLink;
+        return;
+    }
+    
+    // For multiple items, use backend API
+    const checkoutBtn = document.querySelector('.checkout-btn');
+    checkoutBtn.disabled = true;
+    checkoutBtn.textContent = 'Chargement...';
+    
+    createCheckoutSession();
+}
+
+async function createCheckoutSession() {
+    try {
+        const response = await fetch(`${BACKEND_URL}/api/create-checkout-session`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                items: cartItems.map(item => ({
+                    name: item.name,
+                    price: item.price,
+                    quantity: 1,
+                    image: item.image,
+                    color: item.color
+                }))
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error('Erreur lors de la création de la session');
+        }
+
+        const { url } = await response.json();
+        
+        // Redirect to Stripe Checkout
+        window.location.href = url;
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Erreur lors de la création de la session de paiement. Veuillez réessayer.');
+        
+        const checkoutBtn = document.querySelector('.checkout-btn');
+        checkoutBtn.disabled = false;
+        checkoutBtn.textContent = 'Passer la commande';
+    }
 }
 
 // Smooth scroll snap for images
