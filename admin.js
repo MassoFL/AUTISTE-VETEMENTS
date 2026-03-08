@@ -136,6 +136,12 @@ async function createPost() {
                 imageUrls = [...existingImages];
             }
             
+            // Check if we have at least one image
+            if (imageUrls.length === 0) {
+                alert('Le post doit avoir au moins une image');
+                return;
+            }
+            
             // Keep existing colors or set default
             if (imageUrls.length > 0) {
                 const { data: existingPost } = await supabase
