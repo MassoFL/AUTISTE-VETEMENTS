@@ -4,6 +4,7 @@ let editingPostId = null;
 let uploadedFiles = [];
 let imageColorMap = {}; // { colorName: [imageIndex1, imageIndex2, ...] }
 let availableColors = [];
+let existingImages = []; // Store existing images when editing
 const supabase = window.supabaseClient;
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -127,31 +128,27 @@ async function createPost() {
         let colorsArray = [];
         
         if (editingPostId) {
-            // Mode édition
+            // Mode édition - combine existing and new images
             if (uploadedFiles.length > 0) {
-                // Upload new images
-                imageUrls = await uploadImages();
-                
-                // Build colors array
-                imageUrls.forEach((url, index) => {
-                    let assignedColor = null;
-                    for (const [colorName, imageIndices] of Object.entries(imageColorMap)) {
-                        if (imageIndices.includes(index)) {
-                            assignedColor = colorName;
-                            break;
-                        }
-                    }
-                    colorsArray.push(assignedColor || 'Non assigné');
-                });
+                const newImageUrls = await uploadImages();
+                imageUrls = [...existingImages, ...newImageUrls];
             } else {
-                // Keep existing images
+                imageUrls = [...existingImages];
+            }
+            
+            // Keep existing colors or set default
+            if (imageUrls.length > 0) {
                 const { data: existingPost } = await supabase
                     .from('posts')
-                    .select('images, colors')
+                    .select('colors')
                     .eq('id', editingPostId)
                     .single();
-                imageUrls = existingPost.images;
-                colorsArray = existingPost.colors;
+                
+                // Adjust colors array to match new images count
+                colorsArray = existingPost.colors.slice(0, imageUrls.length);
+                while (colorsArray.length < imageUrls.length) {
+                    colorsArray.push('Non assigné');
+                }
             }
         } else {
             // Mode création
@@ -209,6 +206,7 @@ async function createPost() {
         document.getElementById('imagePreview').innerHTML = '';
         document.getElementById('colorImageAssignment').innerHTML = '';
         uploadedFiles = [];
+        existingImages = [];
         imageColorMap = {};
         imageCount = 1;
         loadPosts();
@@ -302,28 +300,60 @@ async function editPost(postId) {
 
         // Set editing mode
         editingPostId = postId;
+        existingImages = [...post.images]; // Copy existing images
         document.querySelector('.submit-btn').textContent = 'Modifier le post';
         
-        // Clear file input and preview
+        // Clear new uploads
         document.querySelector('.image-file').value = '';
         document.getElementById('imagePreview').innerHTML = '';
         uploadedFiles = [];
         
-        // Show existing images as info
-        const previewDiv = document.getElementById('imagePreview');
-        const infoDiv = document.createElement('div');
-        infoDiv.style.cssText = 'color: #888; font-size: 0.9rem; margin-bottom: 10px;';
-        infoDiv.textContent = `${post.images.length} image(s) existante(s). Laissez vide pour garder les images actuelles.`;
-        previewDiv.appendChild(infoDiv);
+        // Show existing images
+        displayExistingImages();
         
         // Scroll to form
         document.querySelector('.form-section').scrollIntoView({ behavior: 'smooth' });
         
-        showSuccessMessage('Mode édition - Modifiez les champs. Les images sont optionnelles.');
+        showSuccessMessage('Mode édition - Modifiez les champs. Vous pouvez supprimer des images existantes.');
     } catch (error) {
         console.error('Error:', error);
         alert('Erreur lors du chargement du post: ' + error.message);
     }
+}
+
+function displayExistingImages() {
+    const previewDiv = document.getElementById('imagePreview');
+    
+    if (existingImages.length === 0) return;
+    
+    const existingDiv = document.createElement('div');
+    existingDiv.innerHTML = '<label style="color: #aaa; font-size: 0.9rem; margin-bottom: 10px; display: block;">Images existantes:</label>';
+    
+    const imagesGrid = document.createElement('div');
+    imagesGrid.className = 'existing-images';
+    
+    existingImages.forEach((imgUrl, index) => {
+        const imgItem = document.createElement('div');
+        imgItem.className = 'existing-image-item';
+        imgItem.innerHTML = `
+            <img src="${imgUrl}" alt="Image ${index + 1}">
+            <button class="existing-image-remove" onclick="removeExistingImage(${index})" type="button">×</button>
+        `;
+        imagesGrid.appendChild(imgItem);
+    });
+    
+    existingDiv.appendChild(imagesGrid);
+    previewDiv.appendChild(existingDiv);
+}
+
+function removeExistingImage(index) {
+    existingImages.splice(index, 1);
+    displayExistingImages();
+    
+    // Refresh preview
+    const previewDiv = document.getElementById('imagePreview');
+    previewDiv.innerHTML = '';
+    displayExistingImages();
 }
 
 function showSuccessMessage(message) {

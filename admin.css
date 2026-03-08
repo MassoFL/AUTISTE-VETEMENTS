@@ -275,7 +275,44 @@ h2 {
     font-size: 0.8rem;
 }
 
-.color-item button:hover {
+.existing-images {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.existing-image-item {
+    position: relative;
+    border: 2px solid #333;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.existing-image-item img {
+    width: 100%;
+    height: 100px;
+    object-fit: cover;
+}
+
+.existing-image-remove {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: #ff4444;
+    color: #fff;
+    border: none;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.existing-image-remove:hover {
     background: #cc0000;
 }
 
