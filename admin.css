@@ -453,3 +453,54 @@ h2 {
         max-height: 300px;
     }
 }
+
+.orders-section {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.order-item {
+    background: #1a1a1a;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    border: 1px solid #222;
+}
+
+.order-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.order-status {
+    padding: 3px 8px;
+    border-radius: 3px;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+}
+
+.order-status.paid {
+    background: #4CAF50;
+    color: #fff;
+}
+
+.order-status.unpaid {
+    background: #ff9800;
+    color: #fff;
+}
+
+.order-details {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #888;
+    font-size: 0.9rem;
+}
+
+.order-amount {
+    font-size: 1.1rem;
+    color: #4CAF50;
+    font-weight: 500;
+}

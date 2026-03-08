@@ -16,6 +16,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     loadColors();
     loadPosts();
+    loadOrders();
     setupEventListeners();
 });
 
