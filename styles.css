@@ -300,6 +300,7 @@ header h1 {
     font-size: 1.1rem;
     margin-bottom: 20px;
     color: #ccc;
+    text-align: center;
 }
 
 .story-container .highlight {
